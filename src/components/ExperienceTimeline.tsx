@@ -1,6 +1,5 @@
 import { SkillTag } from "./SkillTag";
-import { Briefcase } from "lucide-react";
-import { useScrollCardAnimation } from "@/hooks/useScrollCardAnimation";
+import { useSectionReveal } from "@/hooks/useSectionReveal";
 
 type Experience = {
   company: string;
@@ -10,7 +9,6 @@ type Experience = {
   achievements: { text: string; skills: string[] }[];
 };
 
-// Updated with data from the user's resume and message, including new Incred experience
 const EXPERIENCES: Experience[] = [
   {
     company: "Incred Financial Services",
@@ -145,19 +143,17 @@ const EXPERIENCES: Experience[] = [
   },
 ];
 
-// Optimized skills list - reduced from 67 to 33 high-demand skills for Product Analyst/APM roles
 const ALL_SKILLS = [
-  "SQL", "Product Analytics", "Data Analytics", "A/B Testing", "Agile", 
-  "Stakeholder Management", "User Research", "Product Roadmap", "KPI Analysis", 
-  "PRD Writing", "Python", "API", "User Journey", "Feature Prioritization", 
-  "Market Research", "Cross-Team Collaboration", "Business Analysis", "Data Modeling", 
-  "Product Development", "Communication", "ETL", "Google Cloud", "Dashboarding", 
-  "User Stories", "Wireframing", "MVP", "Problem Solving", "Requirements Analysis", 
-  "Process Improvement", "Automation", "Integration", "Product Understanding", 
+  "SQL", "Product Analytics", "Data Analytics", "A/B Testing", "Agile",
+  "Stakeholder Management", "User Research", "Product Roadmap", "KPI Analysis",
+  "PRD Writing", "Python", "API", "User Journey", "Feature Prioritization",
+  "Market Research", "Cross-Team Collaboration", "Business Analysis", "Data Modeling",
+  "Product Development", "Communication", "ETL", "Google Cloud", "Dashboarding",
+  "User Stories", "Wireframing", "MVP", "Problem Solving", "Requirements Analysis",
+  "Process Improvement", "Automation", "Integration", "Product Understanding",
   "Team Collaboration"
 ];
 
-// Skills descriptions for the map - updated for optimized skills
 const SKILL_DESCRIPTIONS: { [skill: string]: string } = {
   "A/B Testing": "Designing and analyzing controlled experiments to validate product hypotheses and optimize user experience",
   "API": "Designing, testing, and integrating RESTful APIs for seamless data exchange between systems",
@@ -175,70 +171,114 @@ const SKILL_DESCRIPTIONS: { [skill: string]: string } = {
 
 export function ExperienceTimeline({
   selectedSkill,
-  setSelectedSkill,
 }: {
   selectedSkill?: string;
   setSelectedSkill?: (skill: string | undefined) => void;
 }) {
+  const { ref, revealed } = useSectionReveal();
+
   return (
-    <section id="experience" className="my-4 sm:my-6 max-w-5xl mx-auto px-4 sm:px-6 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute top-10 right-10 w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full opacity-20 animate-pulse" />
-      <div className="absolute bottom-20 left-10 w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full opacity-25 animate-bounce" style={{animationDelay: '1.5s'}} />
-      
-      <div className="relative z-10">
-        <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-1 flex items-center gap-1 animate-fade-in">
-          <Briefcase className="inline mr-1 animate-pulse" size={20} />
-          Experience
-        </h2>
-        <p className="text-sm sm:text-base text-muted-foreground mb-4 leading-relaxed animate-fade-in" style={{animationDelay: '0.1s'}}>
-          Please request my resume in the link above.
-        </p>
-        
-        <div className="flex flex-col gap-4 sm:gap-5">
-          {EXPERIENCES.map((exp, idx) => (
-            <ScrollAnimatedCard key={idx} index={idx} experience={exp} />
-          ))}
-        </div>
+    <section id="experience" className="w-full" ref={ref}>
+      <p
+        className={`text-xs font-mono tracking-[0.2em] uppercase text-cyan-400 mb-4 ${revealed ? 'animate-reveal-up' : 'opacity-0'}`}
+        style={{ animationDelay: '0s' }}
+      >
+        Experience
+      </p>
+
+      <h2
+        className={`text-4xl sm:text-5xl font-bold text-white mb-2 ${revealed ? 'animate-reveal-up' : 'opacity-0'}`}
+        style={{ animationDelay: '0.1s' }}
+      >
+        Where I've<br />
+        <span className="gradient-text">built things.</span>
+      </h2>
+
+      <p
+        className={`text-white/40 text-xs mb-10 ${revealed ? 'animate-reveal-up' : 'opacity-0'}`}
+        style={{ animationDelay: '0.2s' }}
+      >
+        Please request my resume via the link above.
+      </p>
+
+      <div className="flex flex-col gap-4">
+        {EXPERIENCES.map((exp, idx) => (
+          <ScrollAnimatedCard
+            key={idx}
+            index={idx}
+            experience={exp}
+            selectedSkill={selectedSkill}
+            revealed={revealed}
+          />
+        ))}
       </div>
     </section>
   );
 }
 
-function ScrollAnimatedCard({ experience, index }: { experience: any; index: number }) {
-  const { elementRef, transform } = useScrollCardAnimation();
-  
+function ScrollAnimatedCard({
+  experience,
+  index,
+  selectedSkill,
+  revealed,
+}: {
+  experience: Experience;
+  index: number;
+  selectedSkill?: string;
+  revealed: boolean;
+}) {
+  const highlightedAchievements = selectedSkill
+    ? experience.achievements.filter((a) => a.skills.includes(selectedSkill))
+    : [];
+
   return (
-    <div 
-      ref={elementRef}
-      className="bg-gradient-to-br from-card/60 to-blue-50/30 border border-border shadow-lg rounded-xl px-4 sm:px-6 py-4 sm:py-5 hover:scale-[1.01] transition-all duration-500 hover:shadow-xl"
+    <div
+      className={`rounded-xl p-5 sm:p-6 transition-[box-shadow] duration-300 ${revealed ? 'animate-reveal-up' : 'opacity-0'} ${
+        highlightedAchievements.length > 0 ? 'shadow-[0_0_20px_rgba(6,182,212,0.15)]' : ''
+      }`}
       style={{
-        transform,
-        transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease-out',
+        animationDelay: `${0.3 + index * 0.12}s`,
+        background: 'rgba(255,255,255,0.04)',
+        border: highlightedAchievements.length > 0
+          ? '1px solid rgba(6,182,212,0.3)'
+          : '1px solid rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(10px)',
       }}
     >
-      <div className="flex flex-col gap-2 pb-2 border-b mb-2">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-            <span className="font-semibold text-base sm:text-lg text-primary">{experience.role}</span>
-            <div className="flex items-center">
-              <span className="text-muted-foreground text-sm sm:text-base">@</span>
-              <a 
-                href={experience.company === "Lifesight" ? "https://lifesight.io" : experience.company === "Gauge" ? "https://gauge.ro" : "#"} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="font-medium text-indigo-700 hover:underline ml-1 text-sm sm:text-base transition-colors hover:text-indigo-900"
-              >
-                {experience.company}
-              </a>
-            </div>
-          </div>
-          <span className="text-xs text-indigo-400 font-medium bg-indigo-50 px-2 py-1 rounded-full">{experience.period}</span>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3 pb-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+        <div>
+          <span className="font-semibold text-base text-white">{experience.role}</span>
+          <span className="text-white/40 mx-2">@</span>
+          <a
+            href={experience.company === "Lifesight" ? "https://lifesight.io" : experience.company === "Gauge" ? "https://gauge.ro" : "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors text-sm"
+          >
+            {experience.company}
+          </a>
         </div>
+        <span
+          className="text-xs font-medium px-2.5 py-1 rounded-full shrink-0"
+          style={{ background: 'rgba(99,102,241,0.15)', color: 'rgba(129,140,248,0.9)', border: '1px solid rgba(99,102,241,0.2)' }}
+        >
+          {experience.period}
+        </span>
       </div>
-      <div className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-        {experience.description}
-      </div>
+
+      <p className="text-sm text-white/50 leading-relaxed mb-3">{experience.description}</p>
+
+      {highlightedAchievements.length > 0 && (
+        <div className="mt-3 space-y-1.5">
+          <p className="text-xs text-cyan-400 font-medium mb-2">Relevant highlights:</p>
+          {highlightedAchievements.map((ach, i) => (
+            <div key={i} className="flex gap-2 text-xs text-white/65">
+              <span className="text-cyan-400 shrink-0 mt-0.5">›</span>
+              <span>{ach.text}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

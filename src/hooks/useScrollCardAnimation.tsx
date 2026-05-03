@@ -46,18 +46,23 @@ export const useScrollCardAnimation = () => {
   }, []);
 
   const getTransform = () => {
-    if (!isVisible) return 'translateX(-100px) opacity(0)';
-    
+    if (!isVisible) return 'translateX(-100px)';
+
     switch (animationState) {
       case 'center':
-        return 'translateX(0) scale(1.02) opacity(1)';
+        return 'translateX(0) scale(1.02)';
       case 'left':
-        return 'translateX(-50px) opacity(0.7)';
+        return 'translateX(-50px)';
       case 'right':
-        return 'translateX(50px) opacity(0.7)';
+        return 'translateX(50px)';
       default:
-        return 'translateX(0) opacity(1)';
+        return 'translateX(0)';
     }
+  };
+
+  const getOpacity = () => {
+    if (!isVisible) return 0;
+    return animationState === 'center' ? 1 : 0.7;
   };
 
   return {
@@ -65,6 +70,7 @@ export const useScrollCardAnimation = () => {
     isVisible,
     animationState,
     transform: getTransform(),
+    opacity: getOpacity(),
     scrollY,
   };
 };
