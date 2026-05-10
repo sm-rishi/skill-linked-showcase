@@ -9,7 +9,7 @@ export function HeroSection() {
             className="text-cyan-400 text-xs font-mono tracking-[0.2em] uppercase mb-5 animate-hero-enter opacity-0"
             style={{ animationDelay: '0.1s' }}
           >
-            Product Analyst · APM Aspirant
+            Product Analyst · Product Manager Aspirant
           </p>
 
           <h1
@@ -24,7 +24,7 @@ export function HeroSection() {
             className="text-white/55 text-base sm:text-lg xl:text-xl leading-relaxed max-w-lg mb-8 animate-hero-enter opacity-0"
             style={{ animationDelay: '0.4s' }}
           >
-            Turning Curiosity Into Impact. I build bridges between business needs and tech solutions—plus I actually enjoy the details.
+            Turning Curiosity Into Impact. I build bridges between business needs and product design—plus I actually enjoy the details.
           </p>
 
           <div

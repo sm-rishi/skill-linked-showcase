@@ -35,7 +35,7 @@ export function Header() {
     >
       <div className="flex flex-col">
         <span className="text-sm sm:text-base font-semibold tracking-wide text-white">Saptarshi Mukhopadhyay</span>
-        <span className="text-[10px] sm:text-xs text-white/40 hidden sm:block">Product Analyst & APM Aspirant</span>
+        <span className="text-[10px] sm:text-xs text-white/40 hidden sm:block">Product Analyst & Product Manager Aspirant</span>
       </div>
 
       {/* Desktop Navigation */}
